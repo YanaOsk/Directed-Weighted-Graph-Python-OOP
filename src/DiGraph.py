@@ -15,13 +15,10 @@ class DiGraph(GraphInterface):
         self.outEdges = {}
 
     def __copy__(self, other):
-        # todo implement me
+         """todo implement me"""
 
-        def v_size(self) -> int:
-            """
-            zur's implementation
-            :return:  number of vertices
-            """
+    def v_size(self) -> int:
+       return self.numOfVertices
 
     def e_size(self) -> int:
         return self.numOfEdges
@@ -44,8 +41,8 @@ class DiGraph(GraphInterface):
         """
         ans_dic = {}
         if id1 in self.vertices:
-            for a in self.vertices.get(id1):
-                ans_dic = a
+            for a in self.vertices:
+                ans_dic[id1] = a
         return ans_dic
 
     def all_out_edges_of_node(self, id1: int) -> dict:
@@ -82,10 +79,11 @@ class DiGraph(GraphInterface):
         """
         if node_id not in self.vertices:
             node = Node(node_id, pos)
-            self.vertices.update(node_id, node)
+            self.vertices[node_id] = node
             self.countMc += 1
             self.numOfVertices += 1
-        return True
+            return True
+        return False
 
     def remove_node(self, node_id: int) -> bool:
         """
@@ -100,22 +98,27 @@ class DiGraph(GraphInterface):
         but i am checking if both of id are in vertices dict
         then i check if given id is contains in a value of another id
         if yes , i remove it
-        also the opposite
+
         :param node_id1:
         :param node_id2:
         :return:
         """
+        ans = False
         if node_id1 in self.vertices and node_id2 in self.vertices:
-            ans = False
-            if self.vertices.get(node_id1) == node_id2:
-                self.vertices.pop(node_id1)
+            if node_id2 in self.vertices.get(node_id1).outEdges:
+                self.vertices.get(node_id1).outEdges.pop(node_id2)
+                self.vertices.get(node_id2).inEdges.pop(node_id1)
                 self.countMc += 1
                 self.numOfEdges -= 1
                 ans = True
-            if self.vertices.get(node_id2) == node_id1:
-                self.vertices.pop(node_id2)
-                self.countMc += 1
-                self.numOfEdges -= 1
-                ans = True
-
         return ans
+
+    def remove_edge(self, node_id1: int, node_id2: int) -> bool:
+        if node_id1 in self.vertices_of_graph and node_id2 in self.vertices_of_graph:
+            if node_id2 in self.vertices_of_graph.get(node_id1).out_edges:
+                self.vertices_of_graph.get(node_id1).out_edges.pop(node_id2)
+                self.vertices_of_graph.get(node_id2).in_edges.pop(node_id1)
+                self.edge_size -= 1
+                self.mode_count += 1
+                return True
+        return False
