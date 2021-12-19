@@ -62,7 +62,7 @@ class TestDiGraph(TestCase):
         graph = self.making_a_graph_VN()
         self.assertEqual({5:8},graph.all_in_edges_of_node(5))
         self.assertEqual({}, graph.all_in_edges_of_node(9))
-        
+
 
 
 
