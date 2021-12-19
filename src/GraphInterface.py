@@ -77,6 +77,3 @@ class GraphInterface:
         Note: If such an edge does not exists the function will do nothing
         """
         raise NotImplementedError
-
-
-
