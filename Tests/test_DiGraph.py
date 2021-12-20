@@ -1,7 +1,13 @@
 from unittest import TestCase
+from unittest import TestCase
 from GraphInterface import GraphInterface
 from NodeData import Node
 from DiGraph import DiGraph
+
+
+
+
+
 
 
 class TestDiGraph(TestCase):
@@ -42,7 +48,7 @@ class TestDiGraph(TestCase):
         graph.add_node(12, pos)
         graph.add_node(13, pos)
         self.assertTrue(graph.v_size() == 11)
-        graph.remove_node(graph.v_size()==10)
+        graph.remove_node(graph.v_size() == 10)
 
     def test_e_size(self):
         graph = self.making_a_graph_VN()
@@ -55,30 +61,44 @@ class TestDiGraph(TestCase):
         self.assertTrue(graph.e_size() == 12)
 
     def test_get_all_v(self):
-        self.fail()
+        graph = self.making_a_graph_VN()
+        self.assertEqual(9, len(graph.get_all_v()))
+        graph.remove_node(1)
+        self.assertEqual(8,len(graph.get_all_v))
+        graph.add_node(1)
+        self.assertEqual(9, len(graph.get_all_v()))
+        for i in range(9):
+            graph.remove_node(i)
+        self.assertEqual({}, g.get_all_v())
+
 
     def test_all_in_edges_of_node(self):
         graph = DiGraph()
         graph = self.making_a_graph_VN()
-        self.assertEqual({5:8},graph.all_in_edges_of_node(5))
+        self.assertEqual({5: 8}, graph.all_in_edges_of_node(5))
         self.assertEqual({}, graph.all_in_edges_of_node(9))
-        
-
-
-
-
 
     def test_all_out_edges_of_node(self):
-        self.fail()
+        graph = self.specific_graph_builder()
+        self.assertEqual(0, len(graph.all_out_edges_of_node(1)))
+        self.assertEqual(1, len(graph.all_out_edges_of_node(2)))
+        self.assertEqual(2, len(graph.all_out_edges_of_node(5)))
+        self.assertEqual(1, len(graph.all_out_edges_of_node(6)))
+        graph.remove_edge(5,4)
+        self.assertEqual(1, len(graph.all_out_edges_of_node(5)))
 
     def test_get_mc(self):
         graph = self.making_a_graph_VN()
         graph.add_node(16)
         self.assertTrue(graph.countMc == 10)
 
-
     def test_add_edge(self):
-        self.fail()
+        graph = self.specific_graph_builder()
+        self.assertFalse(graph.add_edge(0, 2, 1))
+        self.assertFalse(graph.add_edge(0, 2, 2))
+        self.assertFalse(graph.add_edge(2, 3, 1))
+        self.assertTrue(graph.add_edge(3, 7, 1))
+        self.assertTrue(graph.add_edge(1, 4, 1))
 
     def test_add_node(self):
         graph = self.MakingGraph_onlyNodes()
@@ -87,7 +107,6 @@ class TestDiGraph(TestCase):
         graph.add_node(12, pos)
         graph.add_node(13, pos)
         self.assertTrue(graph.v_size() == 11)
-
 
     def test_remove_node(self):
         graph = self.MakingGraph_onlyNodes()
@@ -102,3 +121,10 @@ class TestDiGraph(TestCase):
 
     def test_remove_edge(self):
         self.fail()
+
+    def test_remove_edge(self):
+        self.fail()
+
+    def test_as_dict(self):
+        self.fail()
+

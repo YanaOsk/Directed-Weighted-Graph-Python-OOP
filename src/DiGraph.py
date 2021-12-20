@@ -147,3 +147,26 @@ class DiGraph(GraphInterface):
                 self.mode_count += 1
                 return True
         return False
+
+    def as_dict(self):
+        try:
+            nodes = []
+            new_dict = {}
+            for n in self.get_all_v().values():
+                if len(n.pos) == 0:
+                    node = {'id': n.id}
+                elif len(n.pos) == 2:
+                    node = {'id': n.id, 'pos': f"{n.pos[0]},{n.pos[1]}"}
+                else:
+                    node = {'id': n.id, 'pos': f"{n.pos[0]},{n.pos[1]},{n.pos[2]}"}
+                nodes.append(node)
+            new_dict['Nodes'] = nodes
+            edges = []
+            for k in self.vertices_of_graph.keys():
+                for dest, weight in self.all_in_edges_of_node(k).items():
+                    edge = {'src': k, 'dest': dest, 'w': weight}
+                    edges.append(edge)
+            new_dict['Edges'] = edges
+        except IOError as e:
+            print(e)
+        return new_dict
