@@ -11,8 +11,6 @@ class DiGraph(GraphInterface):
         self.numOfEdges = 0
         self.countMc = 0
         self.vertices = {}
-        self.inEdges = {}
-        self.outEdges = {}
 
     def __copy__(self, other):
          """todo implement me"""
@@ -40,11 +38,9 @@ class DiGraph(GraphInterface):
         :param id1:
         :return:
         """
-        ans_dic = {}
         if id1 in self.vertices:
-            for a in self.vertices:
-                ans_dic[id1] = a
-        return ans_dic
+            return self.vertices.get(id1).inEdges
+        return None
 
     def all_out_edges_of_node(self, id1: int) -> dict:
         """
@@ -104,19 +100,19 @@ class DiGraph(GraphInterface):
         :return:
         """
         if node_id in self.vertices:
-            if self.outEdges.get(node_id).key() is not None:
-                for i in self.outEdges.get(node_id).key():
-                    self.vertices.get(i).in_edges.pop(node_id)
+            if self.all_out_edges_of_node(node_id).keys() is not None:
+                for i in self.all_out_edges_of_node(node_id).keys():
+                    self.vertices.get(i).inEdges.pop(node_id)
                     self.numOfEdges -= 1
-                if self.inEdges(node_id).keys() is not None:
-                    for i in self.vertices(node_id).keys():
-                        self.vertices.get(i).out_edges.pop(node_id)
-                        self.numOfEdges -= 1
-                self.vertices.pop(node_id)
-                self.numOfVertices -= 1
-                self.countMc += 1
-                return True
-            return False
+            if self.all_in_edges_of_node(node_id).keys() is not None:
+                for i in self.all_in_edges_of_node(node_id).keys():
+                    self.vertices.get(i).outEdges.pop(node_id)
+                    self.numOfEdges -= 1
+            self.vertices.pop(node_id)
+            self.numOfVertices -= 1
+            self.countMc += 1
+            return True
+        return False
 
     def remove_edge(self, node_id1: int, node_id2: int) -> bool:
         """

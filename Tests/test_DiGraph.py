@@ -56,12 +56,12 @@ class TestDiGraph(TestCase):
 
     def test_get_all_v(self):
         graph = self.making_a_graph_VN()
-        self.assertEqual(9, len(graph.get_all_v()))
+        self.assertEqual(10, len(graph.get_all_v()))
         graph.remove_node(1)
-        self.assertEqual(8,len(graph.get_all_v))
-        graph.add_node(1)
         self.assertEqual(9, len(graph.get_all_v()))
-        for i in range(9):
+        graph.add_node(1)
+        self.assertEqual(10, len(graph.get_all_v()))
+        for i in range(10):
             graph.remove_node(i)
         self.assertEqual({}, graph.get_all_v())
 
@@ -69,11 +69,11 @@ class TestDiGraph(TestCase):
     def test_all_in_edges_of_node(self):
         graph = DiGraph()
         graph = self.making_a_graph_VN()
-        self.assertEqual({5: 8}, graph.all_in_edges_of_node(5))
-        self.assertEqual({}, graph.all_in_edges_of_node(9))
+        self.assertEqual({}, graph.all_in_edges_of_node(5))
+        self.assertEqual({8:2.1}, graph.all_in_edges_of_node(9))
 
     def test_all_out_edges_of_node(self):
-        graph = self.specific_graph_builder()
+        graph = self.making_a_graph_VN()
         self.assertEqual(0, len(graph.all_out_edges_of_node(1)))
         self.assertEqual(1, len(graph.all_out_edges_of_node(2)))
         self.assertEqual(2, len(graph.all_out_edges_of_node(5)))
@@ -84,10 +84,10 @@ class TestDiGraph(TestCase):
     def test_get_mc(self):
         graph = self.making_a_graph_VN()
         graph.add_node(16)
-        self.assertTrue(graph.countMc == 10)
+        self.assertTrue(graph.countMc == 21)
 
     def test_add_edge(self):
-        graph = self.specific_graph_builder()
+        graph = self.making_a_graph_VN()
         self.assertFalse(graph.add_edge(0, 2, 1))
         self.assertFalse(graph.add_edge(0, 2, 2))
         self.assertFalse(graph.add_edge(2, 3, 1))
@@ -113,12 +113,12 @@ class TestDiGraph(TestCase):
         graph.remove_node(13)
         self.assertTrue(graph.v_size() == 9)
 
-    def test_remove_edge(self):
-        self.fail()
-
-    def test_remove_edge(self):
-        self.fail()
-
-    def test_as_dict(self):
-        self.fail()
+    # def test_remove_edge(self):
+    #     self.fail()
+    #
+    # def test_remove_edge(self):
+    #     self.fail()
+    #
+    # def test_as_dict(self):
+    #     self.fail()
 
