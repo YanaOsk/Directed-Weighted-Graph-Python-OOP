@@ -1,8 +1,10 @@
 import collections
 import math
 import queue
-from _ast import List
+
 from collections import deque
+from itertools import permutations
+from typing import List
 
 from GraphAlgoInterface import GraphAlgoInterface
 from GraphInterface import GraphInterface
@@ -106,27 +108,28 @@ class GraphAlgo(GraphAlgoInterface):
 
     def TSP(self, node_lst: List[int]) -> (List[int], float):
         """
-        zur's implementation
-        :param node_lst:
-        :return:
+        Finds the shortest path that visits all the nodes in the list
+        :param node_lst: A list of nodes id's
+        :return: A list of the nodes id's in the path, and the overall distance
         """
         if len(node_lst) == 0:
             return None
         if len(node_lst) == 1:
-            return node_lst
+
+            return node_lst, 0
         try:
-            matrix = floydWarshall(self.graph)
-            min_path = sys.maxsize
+            matrix = self.floydWarshall(self.graph)
+            min_path = math.inf
             car_way = node_lst
             next_permutation = permutations(node_lst)
             for i in next_permutation:
                 current_path_weight = 0
                 k = i[0]
                 for j in i:
-                    if matrix[[k][j]] == None:
+                    if matrix[[k][j]] == math.inf:
                         return None
                     current_path_weight += matrix[[k][j]]
-                    k=j
+                    k = j
                 current_path_weight += matrix[[i[len(node_lst)]][i[0]]]
                 if current_path_weight < min_path:
                     min_path = current_path_weight
@@ -136,7 +139,7 @@ class GraphAlgo(GraphAlgoInterface):
             print(e)
 
 
-        return car_way
+        return car_way , min_path
 
 
 

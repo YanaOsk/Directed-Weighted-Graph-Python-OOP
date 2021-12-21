@@ -1,8 +1,7 @@
 from unittest import TestCase
-from unittest import TestCase
-from GraphInterface import GraphInterface
-from NodeData import Node
-from DiGraph import DiGraph
+from src.GraphInterface import GraphInterface
+from src.NodeData import Node
+from src.DiGraph import DiGraph
 
 
 
@@ -69,7 +68,7 @@ class TestDiGraph(TestCase):
         self.assertEqual(9, len(graph.get_all_v()))
         for i in range(9):
             graph.remove_node(i)
-        self.assertEqual({}, g.get_all_v())
+        self.assertEqual({}, graph.get_all_v())
 
 
     def test_all_in_edges_of_node(self):

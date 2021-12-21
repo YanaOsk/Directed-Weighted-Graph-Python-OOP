@@ -68,7 +68,7 @@ class DiGraph(GraphInterface):
         :return:
         """
         if id1 in self.vertices and id2 in self.vertices:
-            if id2 not in self.vertices.get(id1):
+            if id2 not in self.vertices.get(id1).outEdges:
                 self.vertices.get(id1).outEdges[id2] = weight
                 self.vertices.get(id2).inEdges[id1] = weight
                 self.numOfEdges += 1
