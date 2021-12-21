@@ -1,8 +1,10 @@
 import collections
 import math
 import queue
-from _ast import List
+
 from collections import deque
+from itertools import permutations
+from typing import List
 
 from GraphAlgoInterface import GraphAlgoInterface
 from GraphInterface import GraphInterface
@@ -21,6 +23,7 @@ class GraphAlgo(GraphAlgoInterface):
         zur's implementation
         :return:
         """
+        return self.graph
 
     def load_from_json(self, file_name: str) -> bool:
         graph = DiGraph()
@@ -44,6 +47,13 @@ class GraphAlgo(GraphAlgoInterface):
         """
        zur's implementation
        """
+
+        def save_to_json(self, file_name: str) -> bool:
+            try:
+                with open(file_name, 'w') as out_file:
+                    json.dump(self.graph.as_dict, out_file, indent=4)
+            except IOError as e:
+                print(e)
 
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         path = []
@@ -72,37 +82,65 @@ class GraphAlgo(GraphAlgoInterface):
         return path
 
     def dijkstra(self, srcNode: Node = Node):
-        neighborQueue = collections.deque
+        neighborQueue = queue.PriorityQueue()
         for i in self.graph.get_all_v().values():
-            i.weight(math.inf)
-            i.tag(-1)
-            i.info("")
+            i.weight = math.inf
+            i.tag = -1
+            i.info = ""
         if self.graph.get_all_v().get(srcNode) is not None:
             srcNode.weight(0)
             srcNode.info("" + srcNode.id)
             srcNode.tag(1)
-            neighborQueue.appendleft(srcNode)
+            neighborQueue.put(srcNode)
         while not neighborQueue.empty():
-            if neighborQueue.__getitem__() is not None:
-                currentVertex = neighborQueue.pop()
-                if currentVertex is not None:
-                    for j in self.graph.all_out_edges_of_node(currentVertex.id).keys():
-                        dstVertex = self.graph.vertices.get(j)
-                        tempWeight = currentVertex.weight + self.graph.vertices.get(currentVertex.id).outEdges.get(j)
-                        if dstVertex.tag < 0 or tempWeight < dstVertex.weight:
-                            neighborQueue.appendleft(dstVertex)
-                            dstVertex.info("" + currentVertex.id)
-                            dstVertex.weight(tempWeight)
-                            dstVertex.tag(1)
+            # temp = neighborQueue.pop()
+            # neighborQueue.put(temp)
+            # if temp is not None:
+            currentVertex = neighborQueue.pop()
+            # if currentVertex is not None:
+            for j in self.graph.all_out_edges_of_node(currentVertex.id).keys():
+                dstVertex = self.graph.vertices.get(j)
+                tempWeight = currentVertex.weight + self.graph.vertices.get(currentVertex.id).outEdges.get(j)
+                if dstVertex.tag < 0 or tempWeight < dstVertex.weight:
+                    neighborQueue.put(dstVertex)
+                    dstVertex.info="" + currentVertex.id
+                    dstVertex.weight=tempWeight
+                    dstVertex.tag=1
 
         return 0
 
     def TSP(self, node_lst: List[int]) -> (List[int], float):
         """
-        zur's implementation
-        :param node_lst:
-        :return:
+        Finds the shortest path that visits all the nodes in the list
+        :param node_lst: A list of nodes id's
+        :return: A list of the nodes id's in the path, and the overall distance
         """
+        if len(node_lst) == 0:
+            return None
+        if len(node_lst) == 1:
+            return node_lst, 0
+        try:
+            matrix = self.floydWarshall(self.graph)
+            min_path = math.inf
+            car_way = node_lst
+            next_permutation = permutations(node_lst)
+            for i in next_permutation:
+                current_path_weight = 0
+                k = i[0]
+                for j in i:
+                    if matrix[[k][j]] == math.inf:
+                        return None
+                    current_path_weight += matrix[[k][j]]
+                    k = j
+                current_path_weight += matrix[[i[len(node_lst)]][i[0]]]
+                if current_path_weight < min_path:
+                    min_path = current_path_weight
+                    car_way = i
+
+        except Exception as e:
+            print(e)
+
+        return car_way, min_path
 
     def centerPoint(self) -> (int, float):
         matrix = self.floydWarshall(self.graph)
@@ -155,8 +193,12 @@ class GraphAlgo(GraphAlgoInterface):
                         matrix[j][k] = matrix[j][i] + matrix[i][k]
         return matrix
 
-    def plot_graph(self) -> None:
-        """
-        zur's implementation
-        :return:
-        """
+    # def plot_graph(self) -> None:
+    #     """
+    #     zur's implementation
+    #     :return:
+    #     """
+    def __str__(self):
+        return f"{self.graph}"
+    def __repr__(self):
+        return f"{self.graph}"
