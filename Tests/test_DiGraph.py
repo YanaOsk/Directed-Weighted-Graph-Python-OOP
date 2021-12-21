@@ -12,14 +12,10 @@ from src.DiGraph import DiGraph
 class TestDiGraph(TestCase):
     size = 10
 
-    def graph_conctructor(self) -> DiGraph:
-        graph = DiGraph()
-        return graph
-
     def making_a_graph_VN(self):
         graph = DiGraph()
         pos = [0, 0, 0]
-        for i in range(9):
+        for i in range(10):
             graph.add_node(node_id=i, pos=pos)
         graph.add_edge(0, 2, 1)
         graph.add_edge(2, 3, 1)
@@ -47,7 +43,6 @@ class TestDiGraph(TestCase):
         graph.add_node(12, pos)
         graph.add_node(13, pos)
         self.assertTrue(graph.v_size() == 11)
-        graph.remove_node(graph.v_size() == 10)
 
     def test_e_size(self):
         graph = self.making_a_graph_VN()

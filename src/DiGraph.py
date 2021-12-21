@@ -1,7 +1,7 @@
 import copy
 
-from GraphInterface import GraphInterface
-from NodeData import Node
+from src.GraphInterface import GraphInterface
+from src.NodeData import Node
 
 
 class DiGraph(GraphInterface):
@@ -138,16 +138,6 @@ class DiGraph(GraphInterface):
                 ans = True
         return ans
 
-    def remove_edge(self, node_id1: int, node_id2: int) -> bool:
-        if node_id1 in self.vertices_of_graph and node_id2 in self.vertices_of_graph:
-            if node_id2 in self.vertices_of_graph.get(node_id1).out_edges:
-                self.vertices_of_graph.get(node_id1).out_edges.pop(node_id2)
-                self.vertices_of_graph.get(node_id2).in_edges.pop(node_id1)
-                self.edge_size -= 1
-                self.mode_count += 1
-                return True
-        return False
-
     def as_dict(self):
         try:
             nodes = []
@@ -162,7 +152,7 @@ class DiGraph(GraphInterface):
                 nodes.append(node)
             new_dict['Nodes'] = nodes
             edges = []
-            for k in self.vertices_of_graph.keys():
+            for k in self.vertices.keys():
                 for dest, weight in self.all_in_edges_of_node(k).items():
                     edge = {'src': k, 'dest': dest, 'w': weight}
                     edges.append(edge)

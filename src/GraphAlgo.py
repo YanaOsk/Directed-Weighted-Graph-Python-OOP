@@ -81,29 +81,26 @@ class GraphAlgo(GraphAlgoInterface):
         return path
 
     def dijkstra(self, srcNode: Node = Node):
-        neighborQueue = collections.deque
+        neighbor_Queue = queue.PriorityQueue()
         for i in self.graph.get_all_v().values():
-            i.weight(math.inf)
-            i.tag(-1)
-            i.info("")
+            i.weight = math.inf
+            i.tag = -1
+            i.info = ""
         if self.graph.get_all_v().get(srcNode) is not None:
             srcNode.weight(0)
             srcNode.info("" + srcNode.id)
             srcNode.tag(1)
-            neighborQueue.appendleft(srcNode)
-        while not neighborQueue.empty():
-            if neighborQueue.__getitem__() is not None:
-                currentVertex = neighborQueue.pop()
-                if currentVertex is not None:
-                    for j in self.graph.all_out_edges_of_node(currentVertex.id).keys():
-                        dstVertex = self.graph.vertices.get(j)
-                        tempWeight = currentVertex.weight + self.graph.vertices.get(currentVertex.id).outEdges.get(j)
-                        if dstVertex.tag < 0 or tempWeight < dstVertex.weight:
-                            neighborQueue.appendleft(dstVertex)
-                            dstVertex.info("" + currentVertex.id)
-                            dstVertex.weight(tempWeight)
-                            dstVertex.tag(1)
-
+            neighbor_Queue.appendleft(srcNode)
+        while not neighbor_Queue.empty():
+            currentVertex = neighbor_Queue.get()
+            for j in self.graph.all_out_edges_of_node(currentVertex.id).keys():
+                dstVertex = self.graph.vertices.get(j)
+                tempWeight = currentVertex.weight + self.graph.vertices.get(currentVertex.id).outEdges.get(j)
+                if dstVertex.tag < 0 or tempWeight < dstVertex.weight:
+                     neighbor_Queue.appendleft(dstVertex)
+                     dstVertex.info = "" + currentVertex.id
+                     dstVertex.weight = tempWeight
+                     dstVertex.tag = 1
         return 0
 
     def TSP(self, node_lst: List[int]) -> (List[int], float):
