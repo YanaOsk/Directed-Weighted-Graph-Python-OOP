@@ -1,8 +1,6 @@
-import collections
 import math
 import queue
 
-from collections import deque
 from itertools import permutations
 from typing import List
 
@@ -26,18 +24,22 @@ class GraphAlgo(GraphAlgoInterface):
         return self.graph
 
     def load_from_json(self, file_name: str) -> bool:
-        graph = DiGraph()
+
         try:
-            with open(file_name, "r+") as f:
+            with open(file_name, "r") as f:
+                graph = DiGraph()
                 dict = json.load(f)
-                for k in dict["Nodes"]:
-                    n = Node(k["pos"].split(","))
-                    node = Node(n['id'], (float(n[0]), float(n[1])), float(n[2]))
+                for k in dict['Nodes']:
+                    if len(k) == 1:
+                        node = Node(k['id'])
+                    else:
+                        n = (k['pos'].split(","))
+                        node = Node(k['id'], (float(n[0]), float(n[1])), float(n[2]))
                     graph.add_node(node.id, node.pos)
-                for e in dict["Edges"]:
-                    src = e["src"]
-                    dest = e["dest"]
-                    weight = e["w"]
+                for e in dict['Edges']:
+                    src = e['src']
+                    dest = e['dest']
+                    weight = e['w']
                     graph.add_edge(src, dest, weight)
                 self.graph = graph
         except IOError as e:
@@ -138,9 +140,6 @@ class GraphAlgo(GraphAlgoInterface):
 
         return car_way , min_path
 
-
-
-
     def centerPoint(self) -> (int, float):
         matrix = self.floydWarshall(self.graph)
         mat_1 = matrix[0]
@@ -171,23 +170,23 @@ class GraphAlgo(GraphAlgoInterface):
         return self.graph.get_all_v().get(id)
 
     def floydWarshall(self, a: DiGraph = DiGraph):
-        matrix = [[], []]
-        mat_1 = matrix[0]
-        mat_2 = matrix[1]
-        for i in range(mat_1):
-            for j in range(mat_2):
-                mat_1[i].append(math.inf)
-                mat_2[j].append(math.inf)
-        for k in self.graph.get_all_v():
-            mat_1[k.id].append(0)
-            mat_2[k.id].append(0)
-        for src in self.graph.all_in_edges_of_node():
-            mat_1[src.id].append(src.weight)
-        for dest in self.graph.all_out_edges_of_node():
-            mat_2[dest.id].append(dest.weight)
-        for i in self.graph.v_size():
-            for j in self.graph.e_size():
-                for k in self.graph.v_size():
+        matrix = []
+
+        for i in range(a.numOfVertices):
+            matrix.append([])
+            for j in range(a.numOfVertices):
+                matrix[i].append(math.inf)
+
+        for k in a.get_all_v():
+            matrix[k][k] = 0
+
+        for i in range(a.numOfVertices):
+            for j in range(a.numOfVertices):
+                if a.all_out_edges_of_node(i).__contains__(j):
+                    matrix[i][j] = a.all_out_edges_of_node(i).get(j)
+        for i in range(a.v_size()):
+            for j in range(a.v_size()):
+                for k in range(a.v_size()):
                     if matrix[j][k] > matrix[j][i] + matrix[i][k]:
                         matrix[j][k] = matrix[j][i] + matrix[i][k]
         return matrix

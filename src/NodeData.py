@@ -1,5 +1,5 @@
 class Node:
-    def __init__(self, id, pos, tag=-1, info="",weight =0):
+    def __init__(self, id, pos: tuple = (), tag=-1, info="", weight=0):
         self.id = id
         self.pos = pos
         self.tag = tag
