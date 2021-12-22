@@ -96,21 +96,17 @@ class GraphAlgo(GraphAlgoInterface):
 
         if self.graph.get_all_v().get(srcNode) is not None:
             srcNode.weight(0)
-        srcNode.info("" + srcNode.id)
-        srcNode.tag(1)
+        srcNode.info="" + str(srcNode.id)
+        srcNode.tag=1
         neighborQueue.put(srcNode)
         while not neighborQueue.empty():
-        # temp = neighborQueue.pop()
-        # neighborQueue.put(temp)
-        # if temp is not None:
-            currentVertex = neighborQueue.pop()
-        # if currentVertex is not None:
+            currentVertex = neighborQueue.get()
             for j in self.graph.all_out_edges_of_node(currentVertex.id).keys():
                 dstVertex = self.graph.vertices.get(j)
                 tempWeight = currentVertex.weight + self.graph.vertices.get(currentVertex.id).outEdges.get(j)
                 if dstVertex.tag < 0 or tempWeight < dstVertex.weight:
                     neighborQueue.put(dstVertex)
-                    dstVertex.info = "" + currentVertex.id
+                    dstVertex.info = "" + str(currentVertex.id)
                     dstVertex.weight = tempWeight
                     dstVertex.tag = 1
 
@@ -159,17 +155,21 @@ class GraphAlgo(GraphAlgoInterface):
         mat_1 = matrix[0]
         mat_2 = matrix[1]
         maxPath = []
-        for i in range(mat_1):
-            for j in range(mat_2):
+
+
+        for i in range(len(mat_1)):
+            for j in range(len(mat_2)):
                 if matrix[i][j] > maxPath[i]:
                     maxPath[i] = matrix[i][j]
+
+
         min = math.inf
         id = -1
-        for i in range(maxPath):
+        for i in range(len(maxPath)):
             if maxPath[i] == min:
                 secondMaxid = 0
                 secondMaxi = 0
-                for j in range(matrix):
+                for j in range(len(matrix)):
                     if matrix[j][id] > secondMaxid and matrix[j][id] < min:
                         secondMaxid = matrix[j][id]
                     if matrix[j][i] > secondMaxi and matrix[j][i] < min:
@@ -184,22 +184,23 @@ class GraphAlgo(GraphAlgoInterface):
         return self.graph.get_all_v().get(id)
 
     def floydWarshall(self, a: DiGraph = DiGraph):
-        matrix = [[], []]
-        size = a.v_size()
-        for i in range(size):
-            for j in range(size):
-                matrix[i][j].append(math.inf)
+        matrix = []
+
+        for i in range(a.numOfVertices):
+            matrix.append([])
+            for j in range(a.numOfVertices):
+                matrix[i].append(math.inf)
 
         for k in a.get_all_v():
-            matrix[k.id][k.id].append(0)
+            matrix[k][k] = 0
 
-        for src in a.all_in_edges_of_node():
-            matrix[src.id].append(src.weight)
-        for dest in a.all_out_edges_of_node():
-            matrix[dest.id].append(dest.weight)
-        for i in a.v_size():
-            for j in a.e_size():
-                for k in a.v_size():
+        for i in range(a.numOfVertices):
+            for j in range(a.numOfVertices):
+                if a.all_out_edges_of_node(i).__contains__(j):
+                    matrix[i][j] = a.all_out_edges_of_node(i).get(j)
+        for i in range(a.v_size()):
+            for j in range(a.v_size()):
+                for k in range(a.v_size()):
                     if matrix[j][k] > matrix[j][i] + matrix[i][k]:
                         matrix[j][k] = matrix[j][i] + matrix[i][k]
         return matrix
@@ -216,7 +217,7 @@ class GraphAlgo(GraphAlgoInterface):
         return f"{self.graph}"
 
 
-if __name__ == '__main__':
-    graph = GraphAlgo()
-    graph.load_from_json("A0.json")
-    graph.centerPoint()
+# if __name__ == '__main__':
+#     graph = GraphAlgo()
+#     graph.load_from_json("A0.json")
+#     graph.centerPoint()
