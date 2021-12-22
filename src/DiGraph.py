@@ -11,10 +11,9 @@ class DiGraph(GraphInterface):
         self.numOfEdges = 0
         self.countMc = 0
         self.vertices = {}
-        self.inEdges = {}
-        self.outEdges = {}
 
-
+    def __copy__(self, other):
+         """todo implement me"""
 
     def v_size(self) -> int:
        return self.numOfVertices
@@ -101,19 +100,19 @@ class DiGraph(GraphInterface):
         :return:
         """
         if node_id in self.vertices:
-            if self.outEdges.get(node_id).key() is not None:
-                for i in self.outEdges.get(node_id).key():
-                    self.vertices.get(i).in_edges.pop(node_id)
+            if self.all_out_edges_of_node(node_id).keys() is not None:
+                for i in self.all_out_edges_of_node(node_id).keys():
+                    self.vertices.get(i).inEdges.pop(node_id)
                     self.numOfEdges -= 1
-                if self.inEdges(node_id).keys() is not None:
-                    for i in self.vertices(node_id).keys():
-                        self.vertices.get(i).out_edges.pop(node_id)
-                        self.numOfEdges -= 1
-                self.vertices.pop(node_id)
-                self.numOfVertices -= 1
-                self.countMc += 1
-                return True
-            return False
+            if self.all_in_edges_of_node(node_id).keys() is not None:
+                for i in self.all_in_edges_of_node(node_id).keys():
+                    self.vertices.get(i).outEdges.pop(node_id)
+                    self.numOfEdges -= 1
+            self.vertices.pop(node_id)
+            self.numOfVertices -= 1
+            self.countMc += 1
+            return True
+        return False
 
     def remove_edge(self, node_id1: int, node_id2: int) -> bool:
         """
@@ -135,8 +134,6 @@ class DiGraph(GraphInterface):
                 ans = True
         return ans
 
-
-
     def as_dict(self):
         try:
             nodes = []
@@ -151,7 +148,7 @@ class DiGraph(GraphInterface):
                 nodes.append(node)
             new_dict['Nodes'] = nodes
             edges = []
-            for k in self.vertices_of_graph.keys():
+            for k in self.vertices.keys():
                 for dest, weight in self.all_in_edges_of_node(k).items():
                     edge = {'src': k, 'dest': dest, 'w': weight}
                     edges.append(edge)
@@ -162,5 +159,6 @@ class DiGraph(GraphInterface):
 
     def __str__(self):
         return f"{self.vertices},{self.numOfVertices},{self.numOfEdges},{self.countMc}"
+
     def __repr__(self):
-        return f"{self.vertices},{self.numOfVertices},{self.numOfEdges},{self.inEdges},{self.inEdges},{self.countMc}"
+        return f"{self.vertices},{self.numOfVertices},{self.numOfEdges},{self.countMc}"
