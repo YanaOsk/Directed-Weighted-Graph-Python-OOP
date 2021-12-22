@@ -66,7 +66,7 @@ class GraphAlgo(GraphAlgoInterface):
                 return (self.graph.get_all_v().get(id2).weight, path)
             self.dijkstra(self.graph.get_all_v().get(id1))
             if self.graph.get_all_v().get(id2).weight == math.inf:
-                return (None , None)
+                return (self.graph.get_all_v().get(id2).weight , path)
             destNode = self.graph.get_all_v().get(id2)
             try:
                 while self.graph.get_all_v().get(id1) != destNode:
