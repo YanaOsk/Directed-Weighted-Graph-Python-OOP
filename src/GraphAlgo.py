@@ -4,10 +4,10 @@ import queue
 
 from typing import List
 
-from GraphAlgoInterface import GraphAlgoInterface
-from GraphInterface import GraphInterface
-from NodeData import Node
-from DiGraph import DiGraph
+from src.GraphAlgoInterface import GraphAlgoInterface
+from src.GraphInterface import GraphInterface
+from src.NodeData import Node
+from src.DiGraph import DiGraph
 import json
 from itertools import permutations
 
@@ -123,17 +123,18 @@ class GraphAlgo(GraphAlgoInterface):
         try:
             matrix = self.floydWarshall(self.graph)
             min_path = math.inf
-            car_way = node_lst
+            car_way = None
             next_permutation = permutations(node_lst)
 
             for i in list(next_permutation):
                 current_path_weight = 0
                 k = i[0]
-                for j in range(len(i)):
-                    if matrix[k][j] == math.inf:
-                        return None
-                    current_path_weight += matrix[k][j]
-                    k = j
+                for j in i:
+
+                        current_path_weight += matrix[k][j]
+                        if k != j:
+                            k = j
+
                 current_path_weight += matrix[i[len(node_lst)-1]][i[0]]
                 if current_path_weight < min_path:
                     min_path = current_path_weight
@@ -142,8 +143,13 @@ class GraphAlgo(GraphAlgoInterface):
         except Exception as e:
             print(e)
 
-
-        return (car_way , min_path)
+        path = []
+        if car_way == None:
+            path = None
+        else:
+            for a in range(len(car_way)):
+                path.append(car_way[a])
+        return (path , min_path)
 
     def centerPoint(self) -> (int, float):
         matrix = self.floydWarshall(self.graph)
