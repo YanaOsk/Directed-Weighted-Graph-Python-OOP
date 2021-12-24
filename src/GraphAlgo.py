@@ -1,16 +1,15 @@
-import collections
 import math
 import queue
 
-from collections import deque
-from itertools import permutations
+
 from typing import List
 
-from src.GraphAlgoInterface import GraphAlgoInterface
-from src.GraphInterface import GraphInterface
-from src.NodeData import Node
-from src.DiGraph import DiGraph
+from GraphAlgoInterface import GraphAlgoInterface
+from GraphInterface import GraphInterface
+from NodeData import Node
+from DiGraph import DiGraph
 import json
+from itertools import permutations
 
 
 class GraphAlgo(GraphAlgoInterface):
@@ -51,41 +50,39 @@ class GraphAlgo(GraphAlgoInterface):
         """
        zur's implementation
        """
-
-        try:
-            with open(file_name, 'w') as out_file:
-                json.dump(self.graph.as_dict, out_file, indent=4)
-
-        except IOError as e:
-            print(e)
+        def save_to_json(self, file_name: str) -> bool:
+            try:
+                with open(file_name, 'w') as out_file:
+                    json.dump(self.graph.as_dict, out_file, indent = 4)
+            except IOError as e:
+                print(e)
 
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         path = []
-
         temp = queue.LifoQueue()
         if self.graph.get_all_v().get(id1) is not None and self.graph.get_all_v().get(id2) is not None:
             if id1 == id2:
                 path.append(self.graph.get_all_v().get(id1))
-                return path
-        self.dijkstra(self.graph.get_all_v().get(id1))
-        if self.graph.get_all_v().get(id2).weight == math.inf:
-            return None
-        destNode = self.graph.get_all_v().get(id2)
-        try:
-            while self.graph.get_all_v().get(id1) != destNode:
-                temp.append(destNode)
-                destNode = self.graph.get_all_v().get(int(destNode.info))
-            temp.append(self.graph.get_all_v().get(id1))
-        except ValueError as e:
-            print(e)
-            return None
-        except Exception as e:
-            print(e)
-            return None
-        while not temp.empty():
-            path.append(temp.get())
+                return (self.graph.get_all_v().get(id2).weight, path)
+            self.dijkstra(self.graph.get_all_v().get(id1))
+            if self.graph.get_all_v().get(id2).weight == math.inf:
+                return (self.graph.get_all_v().get(id2).weight , path)
+            destNode = self.graph.get_all_v().get(id2)
+            try:
+                while self.graph.get_all_v().get(id1) != destNode:
+                    temp.append(destNode)
+                    destNode = self.graph.get_all_v().get(int(destNode.info))
+                temp.append(self.graph.get_all_v().get(id1))
+            except ValueError as e:
+                print(e)
+                return (None , None)
+            except Exception as e:
+                print(e)
+                return (None , None)
+            while not temp.empty():
+                path.append(temp.get())
 
-        return path
+        return (self.graph.get_all_v().get(id2).weight, path)
 
     def dijkstra(self, srcNode: Node = Node):
         neighborQueue = queue.PriorityQueue()
@@ -113,7 +110,6 @@ class GraphAlgo(GraphAlgoInterface):
         return 0
 
     def TSP(self, node_lst: List[int]) -> (List[int], float):
-
         """
         Finds the shortest path that visits all the nodes in the list
         :param node_lst: A list of nodes id's
@@ -121,44 +117,42 @@ class GraphAlgo(GraphAlgoInterface):
         """
         if len(node_lst) == 0:
             return None
-
         if len(node_lst) == 1:
-            return node_lst, 0
 
+            return node_lst, 0
         try:
             matrix = self.floydWarshall(self.graph)
             min_path = math.inf
-
             car_way = node_lst
-
             next_permutation = permutations(node_lst)
-            for i in next_permutation:
+
+            for i in list(next_permutation):
                 current_path_weight = 0
                 k = i[0]
-                for j in i:
-                    if matrix[[k][j]] == math.inf:
+                for j in range(len(i)):
+                    if matrix[k][j] == math.inf:
                         return None
-                    current_path_weight += matrix[[k][j]]
+                    current_path_weight += matrix[k][j]
                     k = j
-                    current_path_weight += matrix[[i[len(node_lst)]][i[0]]]
-                    if current_path_weight < min_path:
-                        min_path = current_path_weight
-                        car_way = i
+                current_path_weight += matrix[i[len(node_lst)-1]][i[0]]
+                if current_path_weight < min_path:
+                    min_path = current_path_weight
+                    car_way = i
 
         except Exception as e:
             print(e)
 
-        return car_way, min_path
+
+        return (car_way , min_path)
 
     def centerPoint(self) -> (int, float):
         matrix = self.floydWarshall(self.graph)
-        mat_1 = matrix[0]
-        mat_2 = matrix[1]
+
         maxPath = []
 
-
-        for i in range(len(mat_1)):
-            for j in range(len(mat_2)):
+        for i in range(self.graph.v_size()):
+            maxPath.append(0)
+            for j in range(self.graph.v_size()):
                 if matrix[i][j] > maxPath[i]:
                     maxPath[i] = matrix[i][j]
 
@@ -205,17 +199,18 @@ class GraphAlgo(GraphAlgoInterface):
                         matrix[j][k] = matrix[j][i] + matrix[i][k]
         return matrix
 
-    # def plot_graph(self) -> None:
-    #     """
-    #     zur's implementation
-    #     :return:
-    #     """
+    def plot_graph(self) -> None:
+        """
+        zur's implementation
+        :return:
+        """
+
+    
     def __str__(self):
         return f"{self.graph}"
 
     def __repr__(self):
         return f"{self.graph}"
-
 
 # if __name__ == '__main__':
 #     graph = GraphAlgo()
