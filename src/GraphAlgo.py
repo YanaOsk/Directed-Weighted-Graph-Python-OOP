@@ -60,7 +60,7 @@ class GraphAlgo(GraphAlgoInterface):
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         path = []
         temp = queue.LifoQueue()
-        weight = None
+        weight = math.inf
 
         if self.graph.get_all_v().get(id1) is not None and self.graph.get_all_v().get(id2) is not None:
             if id1 == id2:
