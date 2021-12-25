@@ -11,6 +11,7 @@ class DiGraph(GraphInterface):
         self.numOfEdges = 0
         self.countMc = 0
         self.vertices = {}
+        self.edges={}
 
     def __copy__(self, other):
          """todo implement me"""
@@ -27,6 +28,9 @@ class DiGraph(GraphInterface):
         :return:
         """
         return self.vertices
+
+    def get_edges(self):
+        return self.edges
 
     def all_in_edges_of_node(self, id1: int) -> dict:
         """
@@ -71,6 +75,15 @@ class DiGraph(GraphInterface):
                 self.countMc += 1
                 return True
             return False
+
+    def add_edge_to_dict(self,id1, id2):
+        if id1 not in self.edges and id2 not in self.edges:
+            self.edges[id1] = id2
+            self.countMc += 1
+            self.numOfVertices += 1
+            return True
+        return False
+
 
     def add_node(self, node_id: int, pos: tuple = None) -> bool:
         """
@@ -156,6 +169,8 @@ class DiGraph(GraphInterface):
         except IOError as e:
             print(e)
         return new_dict
+
+
 
     def __str__(self):
         return f"{self.vertices},{self.numOfVertices},{self.numOfEdges},{self.countMc}"

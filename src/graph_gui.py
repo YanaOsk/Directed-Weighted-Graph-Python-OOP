@@ -10,6 +10,9 @@ from src.GraphAlgo import GraphAlgo
 from types import SimpleNamespace
 
 WIDTH, HEIGTH = 800, 600
+graph_algo = GraphAlgo()
+graph_algo.load_from_json('../data/A5.json')
+graph1 = DiGraph()
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -23,16 +26,12 @@ def scale(data, min_screen, max_screen, min_data, max_data):
     return ((data - min_data) / (max_data - min_data)) * (max_screen - min_screen) + min_screen
 
 
-root_path = os.path.dirname(os.path.abspath(__file__))
-
-with open(root_path + './A0.json', 'r') as file:
-    graph = json.load(
-        file, object_hook=lambda json_dict: SimpleNamespace(**json_dict))
-
-min_x = min(list(graph.Nodes), key=lambda n: n.pos.x).pos.x
-min_y = min(list(graph.Nodes), key=lambda n: n.pos.y).pos.y
-max_x = max(list(graph.Nodes), key=lambda n: n.pos.x).pos.x
-max_y = max(list(graph.Nodes), key=lambda n: n.pos.x).pos.x
+min_x = min(list(graph_algo.get_graph().get_all_v()), key=lambda n: graph_algo.get_graph().get_all_v().get(n).pos[0])
+min_y = min(list(graph_algo.get_graph().get_all_v()), key=lambda n: graph_algo.get_graph().get_all_v().get(n).pos[1])
+max_x = max(list(graph_algo.get_graph().get_all_v()), key=lambda n: graph_algo.get_graph().get_all_v().get(n).pos[0])
+max_y = max(list(graph_algo.get_graph().get_all_v()), key=lambda n: graph_algo.get_graph().get_all_v().get(n).pos[1])
+print(min_y)
+print(min_x)
 
 
 def my_scale(data, x=False, y=False):
@@ -52,26 +51,45 @@ while True:
 
     screen.fill(pygame.Color(0, 0, 0))
 
-    for n in graph.Nodes:
-        x = my_scale(n.pos.x, x=True)
-        y = my_scale(n.pos.y, y=True)
+    for n in graph_algo.get_graph().get_all_v():
+        x = my_scale(graph_algo.get_graph().get_all_v().get(n).pos[0], x=True)
+        y = my_scale(graph_algo.get_graph().get_all_v().get(n).pos[1], y=True)
 
-        gfxdraw.filled_circle(screen,int(x),int(y),
-                              radius,Color(64,80,174))
-        gfxdraw.aacircle(screen,int(x),int(y),
-                         radius,Color(255,255,255))
-        id_srf = FONT.render(str(n.id),True,Color(255,255,255))
-        screen.blit(id_srf)
+        gfxdraw.filled_circle(screen, int(x), int(y),
+                              radius, Color(64, 80, 174))
+        gfxdraw.aacircle(screen, int(x), int(y),
+                         radius, Color(255, 255, 255))
+        dest = (100, 100)
+        id_srf = FONT.render(str(graph_algo.get_graph().get_all_v().get(n).id), True, Color(255, 255, 255))
+        screen.blit(id_srf, dest)
 
-    for e in graph.Edges:
-        src = next(n for n in graph.nodes if n.id == e.src)
-        dest = next(n for n in graph.nodes if n.id == e.dest)
+    # for e in graph_algo.get_graph().get_all_v():
+    #     src = next(n for n in graph_algo.get_graph().get_all_v() if graph_algo.get_graph().get_all_v().get(n).id == e.)
+    #     dest = next(n for n in graph_algo.get_graph().get_all_v() if graph_algo.get_graph().get_all_v().get(n).id == e.dest)
+    #
+    #     # scaled positions
+    #     src_x = my_scale(graph_algo.get_graph().get_all_v().get(src).pos[0], x=True)
+    #     src_y = my_scale(graph_algo.get_graph().get_all_v().get(src).pos[1], y=True)
+    #     dest_x = my_scale(graph_algo.get_graph().get_all_v().get(dest).pos[0], x=True)
+    #     dest_y = my_scale(graph_algo.get_graph().get_all_v().get(dest).pos[1], y=True)
+    dest=[]
 
-        # scaled positions
-        src_x = my_scale(src.pos.x, x=True)
-        src_y = my_scale(src.pos.y, y=True)
-        dest_x = my_scale(dest.pos.x, x=True)
-        dest_y = my_scale(dest.pos.y, y=True)
+    for e in graph_algo.get_graph().get_all_v().keys():
+        """
+            אני לא מצליחה להבין בפור הזה אם מורידים את שתי השורות של הDEST זה פותח מסך עם קודקודים 
+            מה שאני מנסה לעשות , זה לקחת קודקוד כמקור ולהכניס לרשימה את היעדים שלו 
+            ואז אני רוצה כל פעם לשלוף את POS מהרשימה של היעדים 
+            כיאלו את הPOS של כולם בתורות ,אבל משהו שם לא מסתדר אולי אתה תבין 
+            אם זה יסתדר יהיה לנו צלעות ואז שוב רק לסדר את הרזולוציה
+             
+            """
+        src = e
+        dest = graph_algo.get_graph().all_out_edges_of_node(e).keys()
+        src_x = my_scale(graph_algo.get_graph().get_all_v().get(e).pos[0],x=True)
+        src_y = my_scale(graph_algo.get_graph().get_all_v().get(e).pos[1],y=True)
+        dest_x = my_scale(graph_algo.get_graph().get_all_v().get(dest[e]).pos[0],x=True)
+        dest_y = my_scale(graph_algo.get_graph().get_all_v().get(dest[e]).pos[1],y=True)
+
 
         # draw the line
         pygame.draw.line(screen, Color(61, 72, 126),

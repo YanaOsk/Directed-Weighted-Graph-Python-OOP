@@ -4,10 +4,10 @@ import queue
 
 from typing import List
 
-from GraphAlgoInterface import GraphAlgoInterface
-from GraphInterface import GraphInterface
-from NodeData import Node
-from DiGraph import DiGraph
+from src.GraphAlgoInterface import GraphAlgoInterface
+from src.GraphInterface import GraphInterface
+from src.NodeData import Node
+from src.DiGraph import DiGraph
 import json
 from itertools import permutations
 
@@ -60,19 +60,24 @@ class GraphAlgo(GraphAlgoInterface):
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         path = []
         temp = queue.LifoQueue()
+        weight = math.inf
+
         if self.graph.get_all_v().get(id1) is not None and self.graph.get_all_v().get(id2) is not None:
             if id1 == id2:
                 path.append(self.graph.get_all_v().get(id1))
                 return (self.graph.get_all_v().get(id2).weight, path)
+
             self.dijkstra(self.graph.get_all_v().get(id1))
+            graph1 = self.graph
             if self.graph.get_all_v().get(id2).weight == math.inf:
                 return (self.graph.get_all_v().get(id2).weight , path)
             destNode = self.graph.get_all_v().get(id2)
             try:
                 while self.graph.get_all_v().get(id1) != destNode:
-                    temp.append(destNode)
+                    temp.put(destNode)
                     destNode = self.graph.get_all_v().get(int(destNode.info))
-                temp.append(self.graph.get_all_v().get(id1))
+                temp.put(self.graph.get_all_v().get(id1))
+                weight = self.graph.get_all_v().get(id2).weight
             except ValueError as e:
                 print(e)
                 return (None , None)
@@ -82,7 +87,7 @@ class GraphAlgo(GraphAlgoInterface):
             while not temp.empty():
                 path.append(temp.get())
 
-        return (self.graph.get_all_v().get(id2).weight, path)
+        return (weight, path)
 
     def dijkstra(self, srcNode: Node = Node):
         neighborQueue = queue.PriorityQueue()
@@ -91,21 +96,25 @@ class GraphAlgo(GraphAlgoInterface):
             i.tag = -1
             i.info = ""
 
-        if self.graph.get_all_v().get(srcNode) is not None:
-            srcNode.weight(0)
-        srcNode.info="" + str(srcNode.id)
-        srcNode.tag=1
-        neighborQueue.put(srcNode)
+        if self.graph.get_all_v().get(srcNode.id) is not None:
+            self.graph.get_all_v().get(srcNode.id).weight = 0
+        self.graph.get_all_v().get(srcNode.id).info = "" + str(srcNode.id)
+        self.graph.get_all_v().get(srcNode.id).tag = 1
+        neighborQueue.put(self.graph.get_all_v().get(srcNode.id))
         while not neighborQueue.empty():
             currentVertex = neighborQueue.get()
             for j in self.graph.all_out_edges_of_node(currentVertex.id).keys():
-                dstVertex = self.graph.vertices.get(j)
-                tempWeight = currentVertex.weight + self.graph.vertices.get(currentVertex.id).outEdges.get(j)
-                if dstVertex.tag < 0 or tempWeight < dstVertex.weight:
-                    neighborQueue.put(dstVertex)
-                    dstVertex.info = "" + str(currentVertex.id)
-                    dstVertex.weight = tempWeight
-                    dstVertex.tag = 1
+                # print("currentVertex.weight")
+                # print(currentVertex.weight)
+                # print("self.graph.all_out_edges_of_node(currentVertex.id).get(j)")
+                # print(self.graph.all_out_edges_of_node(currentVertex.id).get(j))
+
+                tempWeight = currentVertex.weight + self.graph.all_out_edges_of_node(currentVertex.id).get(j)
+                if self.graph.vertices.get(j).tag < 0 or tempWeight < self.graph.vertices.get(j).weight:
+                    self.graph.vertices.get(j).info = "" + str(currentVertex.id)
+                    self.graph.vertices.get(j).weight = tempWeight
+                    self.graph.vertices.get(j).tag = 1
+                    neighborQueue.put(self.graph.vertices.get(j))
 
         return 0
 
@@ -123,17 +132,18 @@ class GraphAlgo(GraphAlgoInterface):
         try:
             matrix = self.floydWarshall(self.graph)
             min_path = math.inf
-            car_way = node_lst
+            car_way = None
             next_permutation = permutations(node_lst)
 
             for i in list(next_permutation):
                 current_path_weight = 0
                 k = i[0]
-                for j in range(len(i)):
-                    if matrix[k][j] == math.inf:
-                        return None
-                    current_path_weight += matrix[k][j]
-                    k = j
+                for j in i:
+
+                        current_path_weight += matrix[k][j]
+                        if k != j:
+                            k = j
+
                 current_path_weight += matrix[i[len(node_lst)-1]][i[0]]
                 if current_path_weight < min_path:
                     min_path = current_path_weight
@@ -142,8 +152,13 @@ class GraphAlgo(GraphAlgoInterface):
         except Exception as e:
             print(e)
 
-
-        return (car_way , min_path)
+        path = []
+        if car_way == None:
+            path = None
+        else:
+            for a in range(len(car_way)):
+                path.append(car_way[a])
+        return (path , min_path)
 
     def centerPoint(self) -> (int, float):
         matrix = self.floydWarshall(self.graph)
@@ -205,7 +220,7 @@ class GraphAlgo(GraphAlgoInterface):
         :return:
         """
 
-    
+
     def __str__(self):
         return f"{self.graph}"
 
