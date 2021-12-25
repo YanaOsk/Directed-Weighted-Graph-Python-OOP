@@ -60,6 +60,8 @@ class GraphAlgo(GraphAlgoInterface):
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         path = []
         temp = queue.LifoQueue()
+        weight = None
+
         if self.graph.get_all_v().get(id1) is not None and self.graph.get_all_v().get(id2) is not None:
             if id1 == id2:
                 path.append(self.graph.get_all_v().get(id1))
@@ -73,6 +75,7 @@ class GraphAlgo(GraphAlgoInterface):
                     temp.append(destNode)
                     destNode = self.graph.get_all_v().get(int(destNode.info))
                 temp.append(self.graph.get_all_v().get(id1))
+                weight = self.graph.get_all_v().get(id2).weight
             except ValueError as e:
                 print(e)
                 return (None , None)
@@ -82,7 +85,7 @@ class GraphAlgo(GraphAlgoInterface):
             while not temp.empty():
                 path.append(temp.get())
 
-        return (self.graph.get_all_v().get(id2).weight, path)
+        return (weight, path)
 
     def dijkstra(self, srcNode: Node = Node):
         neighborQueue = queue.PriorityQueue()
