@@ -21,8 +21,8 @@ def check():
     ([1,3,4,2],3.5)
     """
     # check0()
-    # check1()
-    check2()
+    check1()
+    # check2()
 
 
 def check0():
@@ -69,7 +69,7 @@ def check2():
       :return:
       """
     g_algo = GraphAlgo()
-    file = '../data/A4.json'
+    file = '../data/T0.json'
     g_algo.load_from_json(file)
     g_algo.get_graph().remove_edge(13, 14)
     g_algo.save_to_json(file + "_edited")

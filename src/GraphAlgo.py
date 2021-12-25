@@ -66,15 +66,17 @@ class GraphAlgo(GraphAlgoInterface):
             if id1 == id2:
                 path.append(self.graph.get_all_v().get(id1))
                 return (self.graph.get_all_v().get(id2).weight, path)
+
             self.dijkstra(self.graph.get_all_v().get(id1))
+            graph1 = self.graph
             if self.graph.get_all_v().get(id2).weight == math.inf:
                 return (self.graph.get_all_v().get(id2).weight , path)
             destNode = self.graph.get_all_v().get(id2)
             try:
                 while self.graph.get_all_v().get(id1) != destNode:
-                    temp.append(destNode)
+                    temp.put(destNode)
                     destNode = self.graph.get_all_v().get(int(destNode.info))
-                temp.append(self.graph.get_all_v().get(id1))
+                temp.put(self.graph.get_all_v().get(id1))
                 weight = self.graph.get_all_v().get(id2).weight
             except ValueError as e:
                 print(e)
@@ -94,21 +96,25 @@ class GraphAlgo(GraphAlgoInterface):
             i.tag = -1
             i.info = ""
 
-        if self.graph.get_all_v().get(srcNode) is not None:
-            srcNode.weight(0)
-        srcNode.info="" + str(srcNode.id)
-        srcNode.tag=1
-        neighborQueue.put(srcNode)
+        if self.graph.get_all_v().get(srcNode.id) is not None:
+            self.graph.get_all_v().get(srcNode.id).weight = 0
+        self.graph.get_all_v().get(srcNode.id).info = "" + str(srcNode.id)
+        self.graph.get_all_v().get(srcNode.id).tag = 1
+        neighborQueue.put(self.graph.get_all_v().get(srcNode.id))
         while not neighborQueue.empty():
             currentVertex = neighborQueue.get()
             for j in self.graph.all_out_edges_of_node(currentVertex.id).keys():
-                dstVertex = self.graph.vertices.get(j)
-                tempWeight = currentVertex.weight + self.graph.vertices.get(currentVertex.id).outEdges.get(j)
-                if dstVertex.tag < 0 or tempWeight < dstVertex.weight:
-                    neighborQueue.put(dstVertex)
-                    dstVertex.info = "" + str(currentVertex.id)
-                    dstVertex.weight = tempWeight
-                    dstVertex.tag = 1
+                # print("currentVertex.weight")
+                # print(currentVertex.weight)
+                # print("self.graph.all_out_edges_of_node(currentVertex.id).get(j)")
+                # print(self.graph.all_out_edges_of_node(currentVertex.id).get(j))
+
+                tempWeight = currentVertex.weight + self.graph.all_out_edges_of_node(currentVertex.id).get(j)
+                if self.graph.vertices.get(j).tag < 0 or tempWeight < self.graph.vertices.get(j).weight:
+                    self.graph.vertices.get(j).info = "" + str(currentVertex.id)
+                    self.graph.vertices.get(j).weight = tempWeight
+                    self.graph.vertices.get(j).tag = 1
+                    neighborQueue.put(self.graph.vertices.get(j))
 
         return 0
 
