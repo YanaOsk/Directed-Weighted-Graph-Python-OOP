@@ -71,12 +71,12 @@ class TestGraphAlgo(TestCase):
         self.graphAlgo.__init__(self.makimgAnEmptyGraph())
         ##print(self.graphAlgo)
         graph = GraphAlgo()
-        graph.load_from_json("Empty.json")
+        graph.load_from_json("../data/Empty.json")
         ##print(graph)
         # self.assertEqual(graph.get_graph(),self.graphAlgo.get_graph()) ##I think the problem is in json file
         self.graphAlgo.__init__(self.making_a_graph_VN())
         graph2 = GraphAlgo()
-        graph2.load_from_json("A0.json")
+        graph2.load_from_json("../data/A0.json")
         self.assertNotEqual(graph2.get_graph(),self.graphAlgo.get_graph())
 
     def test_save_to_json(self):
@@ -101,7 +101,9 @@ class TestGraphAlgo(TestCase):
 
 
     def test_tsp(self):
-        self.fail()
+        self.graphAlgo.__init__(self.making_a_graph_VN())
+        self.assertEqual((None, math.inf), self.graphAlgo.TSP([1, 2, 3]))
+        self.assertEqual(([2, 3, 4], 8.5), self.graphAlgo.TSP([2, 3, 4]))
 
     def test_center_point(self):
         self.graphAlgo.__init__(self.graph_for_center())
@@ -112,5 +114,4 @@ class TestGraphAlgo(TestCase):
 
 
 
-    def test_plot_graph(self):
-        self.fail()
+

@@ -1,9 +1,11 @@
 import math
 import queue
+import random
 
-
+import pygame
+from pygame import Color, gfxdraw
+from pygame.constants import RESIZABLE
 from typing import List
-
 from src.GraphAlgoInterface import GraphAlgoInterface
 from src.GraphInterface import GraphInterface
 from src.NodeData import Node
@@ -25,7 +27,7 @@ class GraphAlgo(GraphAlgoInterface):
         return self.graph
 
     def load_from_json(self, file_name: str) -> bool:
-
+        flag = False
         try:
             with open(file_name, "r") as f:
                 graph = DiGraph()
@@ -43,19 +45,25 @@ class GraphAlgo(GraphAlgoInterface):
                     weight = e['w']
                     graph.add_edge(src, dest, weight)
                 self.graph = graph
+                flag = True
         except IOError as e:
             print(e)
+        return True
 
     def save_to_json(self, file_name: str) -> bool:
         """
        zur's implementation
        """
+
         def save_to_json(self, file_name: str) -> bool:
+            flag =False
             try:
                 with open(file_name, 'w') as out_file:
-                    json.dump(self.graph.as_dict, out_file, indent = 4)
+                    json.dump(self.graph.as_dict, out_file, indent=4)
+                    flag =True
             except IOError as e:
                 print(e)
+            return flag
 
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         path = []
@@ -70,7 +78,7 @@ class GraphAlgo(GraphAlgoInterface):
             self.dijkstra(self.graph.get_all_v().get(id1))
             graph1 = self.graph
             if self.graph.get_all_v().get(id2).weight == math.inf:
-                return (self.graph.get_all_v().get(id2).weight , path)
+                return (self.graph.get_all_v().get(id2).weight, path)
             destNode = self.graph.get_all_v().get(id2)
             try:
                 while self.graph.get_all_v().get(id1) != destNode:
@@ -80,10 +88,10 @@ class GraphAlgo(GraphAlgoInterface):
                 weight = self.graph.get_all_v().get(id2).weight
             except ValueError as e:
                 print(e)
-                return (None , None)
+                return (None, None)
             except Exception as e:
                 print(e)
-                return (None , None)
+                return (None, None)
             while not temp.empty():
                 path.append(temp.get())
 
@@ -127,7 +135,6 @@ class GraphAlgo(GraphAlgoInterface):
         if len(node_lst) == 0:
             return None
         if len(node_lst) == 1:
-
             return node_lst, 0
         try:
             matrix = self.floydWarshall(self.graph)
@@ -140,11 +147,11 @@ class GraphAlgo(GraphAlgoInterface):
                 k = i[0]
                 for j in i:
 
-                        current_path_weight += matrix[k][j]
-                        if k != j:
-                            k = j
+                    current_path_weight += matrix[k][j]
+                    if k != j:
+                        k = j
 
-                current_path_weight += matrix[i[len(node_lst)-1]][i[0]]
+                current_path_weight += matrix[i[len(node_lst) - 1]][i[0]]
                 if current_path_weight < min_path:
                     min_path = current_path_weight
                     car_way = i
@@ -158,7 +165,7 @@ class GraphAlgo(GraphAlgoInterface):
         else:
             for a in range(len(car_way)):
                 path.append(car_way[a])
-        return (path , min_path)
+        return (path, min_path)
 
     def centerPoint(self) -> (int, float):
         matrix = self.floydWarshall(self.graph)
@@ -170,7 +177,6 @@ class GraphAlgo(GraphAlgoInterface):
             for j in range(self.graph.v_size()):
                 if matrix[i][j] > maxPath[i]:
                     maxPath[i] = matrix[i][j]
-
 
         min = math.inf
         id = -1
@@ -215,10 +221,99 @@ class GraphAlgo(GraphAlgoInterface):
         return matrix
 
     def plot_graph(self) -> None:
-        """
-        zur's implementation
-        :return:
-        """
+        WIDTH, HEIGTH = 800, 600
+        pygame.init()
+        clock = pygame.time.Clock()
+        screen = pygame.display.set_mode((WIDTH, HEIGTH), depth=32, flags=RESIZABLE)
+        pygame.font.init()
+        FONT = pygame.font.SysFont('Arial', 15)
+        radius = 5
+        for i in self.graph.get_all_v().values():
+            if len(self.graph.get_all_v().get(i.id).pos) == 0:
+                tup = (random.randrange(600,800), random.randrange(600,800), random.randrange(600,800))
+                self.graph.get_all_v().get(i.id).pos = tup
+        def min_x():
+            min_x = math.inf
+            for i in self.graph.get_all_v().values():
+                if i.pos[0] < min_x:
+                    min_x = i.pos[0]
+            return min_x
+
+        def min_y():
+            min_y = math.inf
+            for i in self.graph.get_all_v().values():
+                if i.pos[1] < min_y:
+                    min_y = i.pos[1]
+            return min_y
+
+        def max_x():
+            max_x = 0
+            for i in self.graph.get_all_v().values():
+                if i.pos[0] > max_x:
+                    max_x = i.pos[0]
+            return max_x
+
+        def max_y():
+            max_y = 0
+            for i in self.graph.get_all_v().values():
+                if i.pos[1] > max_y:
+                    max_y = i.pos[1]
+            return max_y
+
+        def scale(data, min_screen, max_screen, min_data, max_data):
+            return ((data - min_data) / (max_data - min_data)) * (max_screen - min_screen) + min_screen
+
+        def my_scale(data, x=False, y=False):
+            if x:
+                return scale(data, 50, screen.get_width() - 50, min_x(), max_x())
+            if y:
+                return scale(data, 50, screen.get_height() - 50, min_y(), max_y())
+
+        def draw_arrow(screen, colour, start, end):
+            pygame.draw.line(screen, colour, start, end, 2)
+            rotation = math.degrees(math.atan2(start[1] - end[1], end[0] - start[0])) + 90
+            pygame.draw.polygon(screen, (120, 45, 76), (
+                (end[0] + 4 * math.sin(math.radians(rotation)), end[1] + 4 * math.cos(math.radians(rotation))),
+                (end[0] + 4 * math.sin(math.radians(rotation - 120)),
+                 end[1] + 4 * math.cos(math.radians(rotation - 120))),
+                (end[0] + 4 * math.sin(math.radians(rotation + 120)),
+                 end[1] + 4 * math.cos(math.radians(rotation + 120)))))
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit(0)
+
+            screen.fill(pygame.Color(255, 255, 255))
+
+            # Making vertices be visible
+            for n in self.graph.get_all_v():
+
+                x = my_scale(self.graph.get_all_v().get(n).pos[0], x=True)
+                y = my_scale(self.graph.get_all_v().get(n).pos[1], y=True)
+                gfxdraw.filled_circle(screen, int(x), int(y),
+                                      radius, Color(64, 80, 174))
+                gfxdraw.aacircle(screen, int(x), int(y),
+                                 radius, Color(255, 255, 255))
+                dest = (x, y)
+                id_srf = FONT.render(str(self.graph.get_all_v().get(n).id), True, Color(0, 0, 0))
+                screen.blit(id_srf, dest)
+
+            dest = []
+            # Making edges be visible
+            for e in self.graph.get_all_v():
+                src_x = my_scale(self.graph.get_all_v().get(e).pos[0], x=True)
+                src_y = my_scale(self.graph.get_all_v().get(e).pos[1], y=True)
+                for i in self.graph.all_out_edges_of_node(e):
+                    dest_x = my_scale(self.graph.get_all_v().get(i).pos[0], x=True)
+                    dest_y = my_scale(self.graph.get_all_v().get(i).pos[1], y=True)
+                    yeter = math.sqrt(math.pow((dest_y - src_y), 2) + math.pow((dest_x - src_x), 2))
+                    sin = (dest_y - src_y) / yeter
+                    cos = (dest_x - src_x) / yeter
+                    draw_arrow(screen, Color(61, 72, 126), (src_x + (20 * cos), src_y + (20 * sin)),
+                               (dest_x - (10 * cos), dest_y - (10 * sin)))
+            pygame.display.update()
+            clock.tick(60)
 
 
     def __str__(self):
@@ -227,7 +322,5 @@ class GraphAlgo(GraphAlgoInterface):
     def __repr__(self):
         return f"{self.graph}"
 
-# if __name__ == '__main__':
-#     graph = GraphAlgo()
-#     graph.load_from_json("A0.json")
-#     graph.centerPoint()
+
+
