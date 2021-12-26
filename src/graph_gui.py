@@ -1,37 +1,35 @@
-import json
-import os
-from pygame import Color, display, gfxdraw
-from pygame.constants import RESIZABLE
-import sys
 import pygame
-import time
+from pygame import Color, gfxdraw
+from pygame.constants import RESIZABLE
 from src.DiGraph import DiGraph
 from src.GraphAlgo import GraphAlgo
-from types import SimpleNamespace
 
+#Making a graph and a window
+##############################################################################
 WIDTH, HEIGTH = 800, 600
 graph_algo = GraphAlgo()
 graph_algo.load_from_json('../data/A5.json')
 graph1 = DiGraph()
-
 pygame.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGTH), depth=32, flags=RESIZABLE)
 pygame.font.init()
-
 FONT = pygame.font.SysFont('Arial', 15)
+###############################################################################
 
-
-def scale(data, min_screen, max_screen, min_data, max_data):
-    return ((data - min_data) / (max_data - min_data)) * (max_screen - min_screen) + min_screen
-
-
+#Making a minx and y and max x and y for the resolution of the screen
+#####################################################################################################################
 min_x = min(list(graph_algo.get_graph().get_all_v()), key=lambda n: graph_algo.get_graph().get_all_v().get(n).pos[0])
 min_y = min(list(graph_algo.get_graph().get_all_v()), key=lambda n: graph_algo.get_graph().get_all_v().get(n).pos[1])
 max_x = max(list(graph_algo.get_graph().get_all_v()), key=lambda n: graph_algo.get_graph().get_all_v().get(n).pos[0])
 max_y = max(list(graph_algo.get_graph().get_all_v()), key=lambda n: graph_algo.get_graph().get_all_v().get(n).pos[1])
-print(min_y)
-print(min_x)
+#####################################################################################################################
+
+
+#Scale functions
+###############################################################################################
+def scale(data, min_screen, max_screen, min_data, max_data):
+    return ((data - min_data) / (max_data - min_data)) * (max_screen - min_screen) + min_screen
 
 
 def my_scale(data, x=False, y=False):
@@ -40,9 +38,11 @@ def my_scale(data, x=False, y=False):
     if y:
         return scale(data, 50, screen.get_height() - 50, min_y, max_y)
 
+################################################################################################
 
+
+#################################################################################################
 radius = 15
-
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -51,6 +51,8 @@ while True:
 
     screen.fill(pygame.Color(0, 0, 0))
 
+
+#Making vertices be visible
     for n in graph_algo.get_graph().get_all_v():
         x = my_scale(graph_algo.get_graph().get_all_v().get(n).pos[0], x=True)
         y = my_scale(graph_algo.get_graph().get_all_v().get(n).pos[1], y=True)
@@ -63,17 +65,9 @@ while True:
         id_srf = FONT.render(str(graph_algo.get_graph().get_all_v().get(n).id), True, Color(255, 255, 255))
         screen.blit(id_srf, dest)
 
-    # for e in graph_algo.get_graph().get_all_v():
-    #     src = next(n for n in graph_algo.get_graph().get_all_v() if graph_algo.get_graph().get_all_v().get(n).id == e.)
-    #     dest = next(n for n in graph_algo.get_graph().get_all_v() if graph_algo.get_graph().get_all_v().get(n).id == e.dest)
-    #
-    #     # scaled positions
-    #     src_x = my_scale(graph_algo.get_graph().get_all_v().get(src).pos[0], x=True)
-    #     src_y = my_scale(graph_algo.get_graph().get_all_v().get(src).pos[1], y=True)
-    #     dest_x = my_scale(graph_algo.get_graph().get_all_v().get(dest).pos[0], x=True)
-    #     dest_y = my_scale(graph_algo.get_graph().get_all_v().get(dest).pos[1], y=True)
-    dest=[]
 
+    dest=[]
+#Making edges be visible
     for e in graph_algo.get_graph().get_all_v().keys():
         """
             אני לא מצליחה להבין בפור הזה אם מורידים את שתי השורות של הDEST זה פותח מסך עם קודקודים 
@@ -96,3 +90,4 @@ while True:
                          (src_x, src_y), (dest_x, dest_y))
     pygame.display.update()
     clock.tick(60)
+######################################################################################################
