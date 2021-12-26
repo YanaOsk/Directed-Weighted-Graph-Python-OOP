@@ -35,6 +35,41 @@ Contains the constructor that builds the graph through the DiGraph class
 | center | A function that calculates the most central vertex, from which the other vertices can be reached in the "cheapest" way. |
 | plot_graph | A function that emits the graph in the GUI that we will detail below. |
 
+## Algorithms we used :
+
+### Dijkstra :
+
+The algorith we took from some youtube videos : 
+
+https://www.youtube.com/watch?v=pVfj6mxhdMw
+
+https://www.youtube.com/watch?v=XB4MIexjvY0
+
+https://www.youtube.com/watch?v=EFg3u_E6eHU
+
+and the algorithm from the wikipedia:
+
+
+Let the node at which we are starting at be called the initial node. Let the distance of node Y be the distance from the initial node to Y. Dijkstra's algorithm will initially start with infinite distances and will try to improve them step by step.
+
+Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
+Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes. The tentative distance of a node v is the length of the shortest path discovered so far between the node v and the starting node. Since initially no path is known to any other vertex than the source itself (which is a path of length zero), all other tentative distances are initially set to infinity. Set the initial node as current.
+For the current node, consider all of its unvisited neighbors and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one. For example, if the current node A is marked with a distance of 6, and the edge connecting it with a neighbor B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
+When we are done considering all of the unvisited neighbors of the current node, mark the current node as visited and remove it from the unvisited set. A visited node will never be checked again.
+If the destination node has been marked visited (when planning a route between two specific nodes) or if the smallest tentative distance among the nodes in the unvisited set is infinity (when planning a complete traversal; occurs when there is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
+Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new current node, and go back to step 3.
+
+### Floyd Warshall algorithm :
+
+https://www.youtube.com/watch?v=4OQeCuLYj-4
+
+and the algorithm from GeeksForGeeks site:
+
+We initialize the solution matrix same as the input graph matrix as a first step. Then we update the solution matrix by considering all vertices as an intermediate vertex. The idea is to one by one pick all vertices and updates all shortest paths which include the picked vertex as an intermediate vertex in the shortest path. When we pick vertex number k as an intermediate vertex, we already have considered vertices {0, 1, 2, .. k-1} as intermediate vertices. For every pair (i, j) of the source and destination vertices respectively, there are two possible cases. 
+1) k is not an intermediate vertex in shortest path from i to j. We keep the value of dist[i][j] as it is. 
+2) k is an intermediate vertex in shortest path from i to j. We update the value of dist[i][j] as dist[i][k] + dist[k][j] if dist[i][j] > dist[i][k] + dist[k][j]
+The following figure shows the above optimal substructure property in the all-pairs shortest path problem.
+
 ## Node
 
 Also we created Node class, that holds node object.
