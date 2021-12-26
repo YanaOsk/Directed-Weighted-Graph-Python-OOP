@@ -1,7 +1,6 @@
 import math
 import queue
 
-
 from typing import List
 
 from src.GraphAlgoInterface import GraphAlgoInterface
@@ -10,7 +9,6 @@ from src.NodeData import Node
 from src.DiGraph import DiGraph
 import json
 from itertools import permutations
-
 
 class GraphAlgo(GraphAlgoInterface):
 
@@ -50,12 +48,11 @@ class GraphAlgo(GraphAlgoInterface):
         """
        zur's implementation
        """
-        def save_to_json(self, file_name: str) -> bool:
-            try:
-                with open(file_name, 'w') as out_file:
-                    json.dump(self.graph.as_dict, out_file, indent = 4)
-            except IOError as e:
-                print(e)
+        try:
+            with open(file_name, 'w') as out_file:
+                json.dump(self.graph.as_dict(), out_file, indent = 4)
+        except IOError as e:
+            print(e)
 
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         path = []

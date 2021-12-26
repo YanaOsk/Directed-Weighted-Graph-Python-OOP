@@ -20,9 +20,10 @@ def check():
     (7, 6.806805834715163)
     ([1,3,4,2],3.5)
     """
-    # check0()
+    check0()
     check1()
-    # check2()
+    check2()
+    check3()
 
 
 def check0():
@@ -45,7 +46,7 @@ def check0():
     print(g.all_in_edges_of_node(1))
     print(g.all_out_edges_of_node(1))
     g_algo = GraphAlgo(g)
-    print(g_algo.shortest_path(0, 3))
+    # print(g_algo.shortest_path(0, 3))
     g_algo.plot_graph()
 
 
@@ -69,7 +70,7 @@ def check2():
       :return:
       """
     g_algo = GraphAlgo()
-    file = '../data/T0.json'
+    file = '../data/A5.json'
     g_algo.load_from_json(file)
     g_algo.get_graph().remove_edge(13, 14)
     g_algo.save_to_json(file + "_edited")
