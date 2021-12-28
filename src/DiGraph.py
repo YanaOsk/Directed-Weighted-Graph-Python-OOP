@@ -1,7 +1,7 @@
 import copy
 
-from GraphInterface import GraphInterface
-from NodeData import Node
+from src.GraphInterface import GraphInterface
+from src.NodeData import Node
 
 
 class DiGraph(GraphInterface):
@@ -11,8 +11,7 @@ class DiGraph(GraphInterface):
         self.numOfEdges = 0
         self.countMc = 0
         self.vertices = {}
-        self.inEdges = {}
-        self.outEdges = {}
+
 
     def __copy__(self, other):
          """todo implement me"""
@@ -28,6 +27,10 @@ class DiGraph(GraphInterface):
         zur's implementation
         :return:
         """
+        return self.vertices
+
+    def get_edges(self):
+        return self.edges
 
     def all_in_edges_of_node(self, id1: int) -> dict:
         """
@@ -39,11 +42,9 @@ class DiGraph(GraphInterface):
         :param id1:
         :return:
         """
-        ans_dic = {}
         if id1 in self.vertices:
-            for a in self.vertices:
-                ans_dic[id1] = a
-        return ans_dic
+            return self.vertices.get(id1).inEdges
+        return None
 
     def all_out_edges_of_node(self, id1: int) -> dict:
         """
@@ -51,6 +52,9 @@ class DiGraph(GraphInterface):
         :param id1:
         :return:
         """
+        if id1 in self.vertices:
+            return self.vertices.get(id1).outEdges
+        return None
 
     def get_mc(self) -> int:
         return self.countMc
@@ -63,6 +67,15 @@ class DiGraph(GraphInterface):
         :param weight:
         :return:
         """
+        if id1 in self.vertices and id2 in self.vertices:
+            if id2 not in self.vertices.get(id1).outEdges:
+                self.vertices.get(id1).outEdges[id2] = weight
+                self.vertices.get(id2).inEdges[id1] = weight
+                self.numOfEdges += 1
+                self.countMc += 1
+                return True
+            return False
+
 
     def add_node(self, node_id: int, pos: tuple = None) -> bool:
         """
@@ -91,6 +104,20 @@ class DiGraph(GraphInterface):
         :param node_id:
         :return:
         """
+        if node_id in self.vertices:
+            if self.all_out_edges_of_node(node_id).keys() is not None:
+                for i in self.all_out_edges_of_node(node_id).keys():
+                    self.vertices.get(i).inEdges.pop(node_id)
+                    self.numOfEdges -= 1
+            if self.all_in_edges_of_node(node_id).keys() is not None:
+                for i in self.all_in_edges_of_node(node_id).keys():
+                    self.vertices.get(i).outEdges.pop(node_id)
+                    self.numOfEdges -= 1
+            self.vertices.pop(node_id)
+            self.numOfVertices -= 1
+            self.countMc += 1
+            return True
+        return False
 
     def remove_edge(self, node_id1: int, node_id2: int) -> bool:
         """
@@ -98,7 +125,6 @@ class DiGraph(GraphInterface):
         but i am checking if both of id are in vertices dict
         then i check if given id is contains in a value of another id
         if yes , i remove it
-
         :param node_id1:
         :param node_id2:
         :return:
@@ -113,12 +139,33 @@ class DiGraph(GraphInterface):
                 ans = True
         return ans
 
-    def remove_edge(self, node_id1: int, node_id2: int) -> bool:
-        if node_id1 in self.vertices_of_graph and node_id2 in self.vertices_of_graph:
-            if node_id2 in self.vertices_of_graph.get(node_id1).out_edges:
-                self.vertices_of_graph.get(node_id1).out_edges.pop(node_id2)
-                self.vertices_of_graph.get(node_id2).in_edges.pop(node_id1)
-                self.edge_size -= 1
-                self.mode_count += 1
-                return True
-        return False
+    def as_dict(self):
+        try:
+            nodes = []
+            new_dict = {}
+            for n in self.get_all_v().values():
+                if len(n.pos) == 0:
+                    node = {'id': n.id}
+                elif len(n.pos) == 2:
+                    node = {'id': n.id, 'pos': f"{n.pos[0]},{n.pos[1]}"}
+                else:
+                    node = {'id': n.id, 'pos': f"{n.pos[0]},{n.pos[1]},{n.pos[2]}"}
+                nodes.append(node)
+            new_dict['Nodes'] = nodes
+            edges = []
+            for k in self.vertices.keys():
+                for dest, weight in self.all_in_edges_of_node(k).items():
+                    edge = {'src': k, 'dest': dest, 'w': weight}
+                    edges.append(edge)
+            new_dict['Edges'] = edges
+        except IOError as e:
+            print(e)
+        return new_dict
+
+
+
+    def __str__(self):
+        return f"{self.vertices},{self.numOfVertices},{self.numOfEdges},{self.countMc}"
+
+    def __repr__(self):
+        return f"{self.vertices},{self.numOfVertices},{self.numOfEdges},{self.countMc}"
